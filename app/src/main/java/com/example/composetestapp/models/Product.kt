@@ -16,7 +16,7 @@ data class Product(
             Product(
                 id = 1,
                 category = "Electronics",
-                description = "The best phone in the world",
+                description = "The iPhone 12 Pro display has rounded corners that follow a beautiful curved design, and these corners are within a standard rectangle. When measured as a standard rectangular shape, the screen is 6.06 inches diagonally (actual viewable area is less).",
                 image = "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg",
                 price = 1000.0,
                 rating = Rating(4, 4.5),

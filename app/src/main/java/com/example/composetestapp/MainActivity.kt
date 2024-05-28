@@ -27,20 +27,40 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.composetestapp.screens.HomeScreen
+import com.example.composetestapp.screens.ProductDetailScreen
 import com.example.composetestapp.ui.theme.ComposeTestAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val navController = rememberNavController()
             ComposeTestAppTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeScreen()
+                    NavHost(navController = navController, startDestination = "home"){
+                        composable("home"){
+                            HomeScreen(navController)
+                        }
+
+                        composable(
+                            route = "detail/{productId}",
+                            arguments = listOf(navArgument("productId") { type = NavType.IntType })
+                        ){
+                            val productId = it.arguments?.getInt("productId") ?: 0
+                            ProductDetailScreen(productId = productId)
+                        }
+                    }
+
                 }
             }
         }
