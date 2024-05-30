@@ -15,8 +15,8 @@ data class Product(
         val productList = List(10){
             Product(
                 id = 1,
-                category = "Electronics",
-                description = "The best phone in the world",
+                category = "Elecronics",
+                description = "Sistema avanzado de dos cámaras de 12 MP (ultra gran angular y gran angular), modo Noche, Deep Fusion, HDR Inteligente 3 y grabación de video 4K HDR en Dolby Vision.",
                 image = "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg",
                 price = 1000.0,
                 rating = Rating(4, 4.5),
