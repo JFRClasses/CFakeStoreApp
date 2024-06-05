@@ -1,4 +1,4 @@
-package com.example.composetestapp.screens
+package com.example.composetestapp.presentation.screens
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -41,14 +41,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.composetestapp.R
 import com.example.composetestapp.data.ProductService
-import com.example.composetestapp.models.Product
-import com.example.composetestapp.ui.theme.Purple40
-import com.example.composetestapp.ui.theme.PurpleGrey80
+import com.example.composetestapp.domain.models.Product
+import com.example.composetestapp.presentation.theme.Purple40
+import com.example.composetestapp.presentation.theme.PurpleGrey80
+import com.example.composetestapp.presentation.viewmodels.ProductsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -57,34 +59,37 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 @Composable
-fun HomeScreen(navController:NavController){
-    var products by remember {
-        mutableStateOf(listOf<Product>())
-    }
-    var isLoading by remember{
-        mutableStateOf(false)
-    }
-    val scope = rememberCoroutineScope()
-
-    LaunchedEffect(key1 = true){
-        scope.launch {
-            val BASE_URL = "https://fakestoreapi.com/"
-            val productService = Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(ProductService::class.java)
-            isLoading = true
-            val response = productService.getProducts()
-            Log.i("HomeScreen",response.toString())
-            withContext(Dispatchers.IO){
-                products = response
-                isLoading = false
-            }
-        }
-    }
-
-    if(isLoading){
+fun HomeScreen(
+    navController:NavController,
+    productsViewModel : ProductsViewModel = hiltViewModel()
+){
+//    var products by remember {
+//        mutableStateOf(listOf<Product>())
+//    }
+//    var isLoading by remember{
+//        mutableStateOf(false)
+//    }
+//    val scope = rememberCoroutineScope()
+//
+//    LaunchedEffect(key1 = true){
+//        scope.launch {
+//            val BASE_URL = "https://fakestoreapi.com/"
+//            val productService = Retrofit.Builder()
+//                .baseUrl(BASE_URL)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build()
+//                .create(ProductService::class.java)
+//            isLoading = true
+//            val response = productService.getProducts()
+//            Log.i("HomeScreen",response.toString())
+//            withContext(Dispatchers.IO){
+//                products = response
+//                isLoading = false
+//            }
+//        }
+//    }
+val state = productsViewModel.productsState.value
+    if(state.isLoading){
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -98,7 +103,7 @@ fun HomeScreen(navController:NavController){
             modifier = Modifier.padding(10.dp)
         ){
 
-            items(products){
+            items(state.products){
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()

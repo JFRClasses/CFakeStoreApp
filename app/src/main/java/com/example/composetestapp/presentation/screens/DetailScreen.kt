@@ -1,4 +1,4 @@
-package com.example.composetestapp.screens
+package com.example.composetestapp.presentation.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -34,12 +34,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.composetestapp.R
 import com.example.composetestapp.data.ProductService
-import com.example.composetestapp.models.Product
-import com.example.composetestapp.models.Rating
-import com.example.composetestapp.ui.theme.Purple40
+import com.example.composetestapp.domain.models.Product
+import com.example.composetestapp.domain.models.Rating
+import com.example.composetestapp.presentation.theme.Purple40
+import com.example.composetestapp.presentation.viewmodels.ProductDetailViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -47,44 +49,44 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 @Composable
-fun DetailScreen(productId:Int){
-    var product by remember{
-        mutableStateOf(
-            Product(
-                id = 0,
-                title = "",
-                description = "",
-                price = 0.0,
-                category = "",
-                rating = Rating(count = 0, rate = 0.0),
-                image = ""
-            )
-        )
-    }
-    var isLoading by remember{
-        mutableStateOf(false)
-    }
-    val scope = rememberCoroutineScope()
+fun DetailScreen(
+    productId:Int,
+    productDetailViewModel : ProductDetailViewModel = hiltViewModel()
+){
+//    var product by remember{
+//        mutableStateOf(
 
-    LaunchedEffect(key1 = true){
-        scope.launch{
-            val BASE_URL = "https://fakestoreapi.com/"
-            val productService = Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(ProductService::class.java)
-            isLoading = true
-            val response = productService.getProductById(productId)
-            withContext(Dispatchers.IO){
-                product = response
-                isLoading = false
-            }
+//        )
+//    }
+//    var isLoading by remember{
+//        mutableStateOf(false)
+//    }
+//    val scope = rememberCoroutineScope()
+//
+//    LaunchedEffect(key1 = true){
+//        scope.launch{
+//            val BASE_URL = "https://fakestoreapi.com/"
+//            val productService = Retrofit.Builder()
+//                .baseUrl(BASE_URL)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build()
+//                .create(ProductService::class.java)
+//            isLoading = true
+//            val response = productService.getProductById(productId)
+//            withContext(Dispatchers.IO){
+//                product = response
+//                isLoading = false
+//            }
+//        }
+//    }
+val state = productDetailViewModel.productState.value
+    if(state.isLoading){
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
         }
-    }
-
-    if(isLoading){
-        CircularProgressIndicator()
     }
     else{
         Column(
@@ -93,7 +95,7 @@ fun DetailScreen(productId:Int){
                 .padding(10.dp)
         ) {
             Text(
-                text = product.title,
+                text = state.product.title,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(bottom = 10.dp),
@@ -103,7 +105,7 @@ fun DetailScreen(productId:Int){
                 )
             )
             AsyncImage(
-                model = product.image,
+                model = state.product.image,
                 contentDescription = null,
                 placeholder = painterResource(id = R.drawable.ic_launcher_background),
                 modifier = Modifier
@@ -111,7 +113,7 @@ fun DetailScreen(productId:Int){
                     .height(200.dp)
             )
             Text(
-                product.description,
+                state.product.description,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .fillMaxWidth()
@@ -134,7 +136,7 @@ fun DetailScreen(productId:Int){
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
                 Text(
-                    text = product.rating.rate.toString(),
+                    text = state.product.rating.rate.toString(),
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -150,7 +152,7 @@ fun DetailScreen(productId:Int){
                         .padding(5.dp)
                 ) {
                     Text(
-                        text = product.category,
+                        text = state.product.category,
                         color = Color.White,
                         style = TextStyle(
                             fontSize = 12.sp,
@@ -161,7 +163,7 @@ fun DetailScreen(productId:Int){
 
             }
             Spacer(modifier = Modifier.weight(1f))
-            Text(product.computedPrice)
+            Text(state.product.computedPrice)
 
         }
     }
